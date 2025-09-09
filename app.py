@@ -10,12 +10,14 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 from supabase import create_client
+from flask_cors import CORS
 
 SUPABASE_URL = "https://frpqytwwgcxudrtenskk.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZycHF5dHd3Z2N4dWRydGVuc2trIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMDQ1NjIsImV4cCI6MjA3MjU4MDU2Mn0.KoqxNqEH_eGkZ6FzykzlUM7PyPv0sXkcrGC6RqxATjY"   # anon (com RLS de SELECT) ou service_role (apenas no backend)
 sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = Flask(__name__)
+CORS(app)
 
 @app.get("/")
 def ok():
