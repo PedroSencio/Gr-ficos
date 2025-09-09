@@ -23,7 +23,7 @@ def ok():
 
 @app.get("/apolices-15-dias.png")
 def plot_png():
-    dias = 15
+    dias = 10
     hoje_utc = datetime.now(timezone.utc).date()
     inicio   = hoje_utc - timedelta(days=dias)
     amanha   = hoje_utc + timedelta(days=1)  # limite exclusivo (< amanhã)
@@ -52,12 +52,11 @@ def plot_png():
     plt.figure(figsize=(8, 3))
     plt.bar(xs, ys, width=0.8, align="center")  # ← barras
     plt.title(f"Apólices criadas (últimos {dias} dias)")
-    plt.xlabel("Data (UTC)")
-    plt.ylabel("Quantidade")
+    plt.xlabel("Data")
 
     ax = plt.gca()
     ax.xaxis.set_major_locator(mdates.DayLocator(interval=max(1, dias // 10)))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%d"))
     plt.gcf().autofmt_xdate(rotation=30)
     plt.tight_layout()
 
