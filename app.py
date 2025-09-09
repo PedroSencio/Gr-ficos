@@ -25,21 +25,28 @@ def ok():
 
 @app.get("/apolices-10")
 def apolices_10():
-    
-    response =  sb.table("apolices").select("data_vencimento").execute() 
+    # Busca todas as colunas das apólices
+    response = sb.table("apolices").select("*").execute()
     rows = response.data or []
 
     if not rows:
         return {"message": "No records found."}, 404
-    
+
     today = date.today()
     ten_days_later = today + timedelta(days=10)
 
     expiring_policies = []
     for row in rows:
-        if today <= date.fromisoformat(row["data_vencimento"]) <= ten_days_later:
-            expiring_policies.append(row)
-    
+        # Garante que data_vencimento existe e está no formato correto
+        venc = row.get("data_vencimento")
+        if venc:
+            try:
+                venc_date = date.fromisoformat(venc)
+                if today <= venc_date <= ten_days_later:
+                    expiring_policies.append(row)
+            except Exception:
+                continue
+
     return {"expiring_policies": expiring_policies, "count": len(expiring_policies)}
 
 @app.get("/apolices-15-dias.png")
