@@ -1,6 +1,7 @@
 from flask import Flask, send_file
 import io
 from datetime import date, timedelta, datetime, timezone
+import os
 
 # Matplotlib "sem tela"
 import matplotlib
@@ -67,4 +68,5 @@ def plot_png():
     return send_file(buf, mimetype="image/png")
 
 if __name__ == "__main__":
-    app.run("127.0.0.1", 5000, debug=True, use_reloader=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
