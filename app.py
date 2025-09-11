@@ -27,49 +27,52 @@ def ok():
 @app.get("/apolices-tipo")
 def apolices_tipo():
     try:
-        print("[DEBUG] Iniciando consulta Supabase...")
         response = sb.table("apolices").select("tipo_seguro").execute()
         rows = response.data or []
-        print(f"[DEBUG] Linhas retornadas: {len(rows)}")
+
         if not rows:
             return {"message": "No records found."}, 404
+        
+        carro = 0
+        moto = 0
+        casa = 0
+        vida = 0
+        outro = 0
 
-        tipos = {"carro": 0, "moto": 0, "casa": 0, "vida": 0, "outro": 0}
         for row in rows:
             tipo = row.get("tipo_seguro", "").lower()
-            print(f"[DEBUG] tipo_seguro: {tipo}")
-            if tipo in tipos:
-                tipos[tipo] += 1
+            if tipo == "carro" :
+                carro += 1
+            elif tipo == "moto":
+                moto += 1
+            elif tipo == "casa":
+                casa += 1
+            elif tipo == "vida":
+                vida += 1
             else:
-                tipos["outro"] += 1
+                outro += 1
 
-        print(f"[DEBUG] Contagem tipos: {tipos}")
-        carro = tipos["carro"]
-        moto  = tipos["moto"]
-        casa  = tipos["casa"]
-        vida  = tipos["vida"]
-        outro = tipos["outro"]
+        print(carro, moto, casa, vida, outro)
 
         valores = [carro, moto, casa, vida, outro]
-        if sum(valores) == 0:
-            return {"message": "Nenhuma apólice encontrada para os tipos."}, 404
+        colors = ["#1976D2", "#388E3C", "#FBC02D", "#D32F2F", "#757575"]  # azul, verde, amarelo, vermelho, cinza
+        labels = ["Carro", "Moto", "Casa", "Vida", "Outro"]
 
-     # Cores e labels personalizadas
-     colors = ["#1976D2", "#388E3C", "#FBC02D", "#D32F2F", "#757575"]  # azul, verde, amarelo, vermelho, cinza
-     labels = ["Carro", "Moto", "Casa", "Vida", "Outro"]
-     fig, ax = plt.subplots()
-     ax.pie(valores, colors=colors, labels=labels, radius=3, center=(0, 0),
-         wedgeprops=dict(width=1.5, edgecolor='w'), autopct='%1.0f%%')
-     ax.set(aspect="equal", title='Tipos de Apólices')
-     ax.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5))
+        fig, ax = plt.subplots()
+        ax.pie(valores, colors=colors, radius=1, center=(0, 0))
+        ax.set(aspect="equal", title='Tipos de Apólices')
+        ax.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5))
 
-     buf = io.BytesIO()
-     plt.savefig(buf, format="png", dpi=320)
-     plt.close()
-     buf.seek(0)
-     print("[DEBUG] Gráfico gerado com sucesso!")
-     return send_file(buf, mimetype="image/png")
 
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png", dpi=320)
+        plt.close()
+        buf.seek(0)
+        return send_file(buf, mimetype="image/png")
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+    
 @app.get("/apolices-10")
 def apolices_10():
     # Busca todas as colunas das apólices
