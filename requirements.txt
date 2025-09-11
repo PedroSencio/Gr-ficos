@@ -1,5 +1,7 @@
 flask
 matplotlib
 supabase
+numpy
+flask-cors
 gunicorn
 flask-cors
