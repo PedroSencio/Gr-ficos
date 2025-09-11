@@ -60,9 +60,8 @@ def apolices_tipo():
 
         fig, ax = plt.subplots(figsize=(10, 6))  # largura=6, altura=6 polegadas
         ax.pie(valores, colors=colors, radius=1, center=(0, 0))
-        ax.set(aspect="equal", title='Tipos de Apólices')
+        ax.set(aspect="equal")
         ax.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5))
-
 
         buf = io.BytesIO()
         plt.savefig(buf, format="png", dpi=520)
