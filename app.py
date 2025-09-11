@@ -23,6 +23,43 @@ CORS(app)
 def ok():
     return "OK — abra /plot.png"
 
+@app.get("/apolices-tipo")
+def apolices_tipo():
+    response = sb.table("apolices").select("tipo_seguro").group("tipo").execute()
+    rows = response.data or []
+
+    if not rows:
+        return {"message": "No records found."}, 404
+    
+    tipos = {"carro": 0, "moto": 0, "casa": 0, "vida": 0, "outro": 0}
+    for row in rows:
+        tipo = row.get("tipo_seguro", "").lower()
+        if tipo in tipos:
+            tipos[tipo] += 1
+        else:
+            tipos["outro"] += 1
+
+    carro = tipos["carro"]
+    moto  = tipos["moto"]
+    casa  = tipos["casa"]
+    vida  = tipos["vida"]
+    outro = tipos["outro"]
+
+    colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, len(5)))
+
+    fig, ax = plt.subplots()
+    ax.pie([carro, moto, casa, vida, outro], colors=colors, radius=3, center=(0, 0),
+           wedgeprops=dict(width=1.5, edgecolor='w'))
+    
+    ax.set(aspect="equal", title='Tipos de Apólices')
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=320)
+    plt.close()
+    buf.seek(0)
+
+    return send_file(buf, mimetype="image/png")
+
 @app.get("/apolices-10")
 def apolices_10():
     # Busca todas as colunas das apólices
