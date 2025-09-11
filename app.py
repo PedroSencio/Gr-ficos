@@ -54,21 +54,21 @@ def apolices_tipo():
         if sum(valores) == 0:
             return {"message": "Nenhuma apólice encontrada para os tipos."}, 404
 
-        colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, 5))
-        fig, ax = plt.subplots()
-        ax.pie(valores, colors=colors, radius=3, center=(0, 0),
-               wedgeprops=dict(width=1.5, edgecolor='w'))
-        ax.set(aspect="equal", title='Tipos de Apólices')
+     # Cores e labels personalizadas
+     colors = ["#1976D2", "#388E3C", "#FBC02D", "#D32F2F", "#757575"]  # azul, verde, amarelo, vermelho, cinza
+     labels = ["Carro", "Moto", "Casa", "Vida", "Outro"]
+     fig, ax = plt.subplots()
+     ax.pie(valores, colors=colors, labels=labels, radius=3, center=(0, 0),
+         wedgeprops=dict(width=1.5, edgecolor='w'), autopct='%1.0f%%')
+     ax.set(aspect="equal", title='Tipos de Apólices')
+     ax.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5))
 
-        buf = io.BytesIO()
-        plt.savefig(buf, format="png", dpi=320)
-        plt.close()
-        buf.seek(0)
-        print("[DEBUG] Gráfico gerado com sucesso!")
-        return send_file(buf, mimetype="image/png")
-    except Exception as e:
-        print(f"[ERROR] {e}")
-        return {"error": str(e)}, 500
+     buf = io.BytesIO()
+     plt.savefig(buf, format="png", dpi=320)
+     plt.close()
+     buf.seek(0)
+     print("[DEBUG] Gráfico gerado com sucesso!")
+     return send_file(buf, mimetype="image/png")
 
 @app.get("/apolices-10")
 def apolices_10():
