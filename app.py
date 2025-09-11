@@ -26,41 +26,49 @@ def ok():
 
 @app.get("/apolices-tipo")
 def apolices_tipo():
-    response = sb.table("apolices").select("tipo_seguro").group("tipo").execute()
-    rows = response.data or []
+    try:
+        print("[DEBUG] Iniciando consulta Supabase...")
+        response = sb.table("apolices").select("tipo_seguro").execute()
+        rows = response.data or []
+        print(f"[DEBUG] Linhas retornadas: {len(rows)}")
+        if not rows:
+            return {"message": "No records found."}, 404
 
-    if not rows:
-        return {"message": "No records found."}, 404
-    
-    tipos = {"carro": 0, "moto": 0, "casa": 0, "vida": 0, "outro": 0}
-    for row in rows:
-        tipo = row.get("tipo_seguro", "").lower()
-        if tipo in tipos:
-            tipos[tipo] += 1
-        else:
-            tipos["outro"] += 1
+        tipos = {"carro": 0, "moto": 0, "casa": 0, "vida": 0, "outro": 0}
+        for row in rows:
+            tipo = row.get("tipo_seguro", "").lower()
+            print(f"[DEBUG] tipo_seguro: {tipo}")
+            if tipo in tipos:
+                tipos[tipo] += 1
+            else:
+                tipos["outro"] += 1
 
-    carro = tipos["carro"]
-    moto  = tipos["moto"]
-    casa  = tipos["casa"]
-    vida  = tipos["vida"]
-    outro = tipos["outro"]
+        print(f"[DEBUG] Contagem tipos: {tipos}")
+        carro = tipos["carro"]
+        moto  = tipos["moto"]
+        casa  = tipos["casa"]
+        vida  = tipos["vida"]
+        outro = tipos["outro"]
 
-    valores = [carro, moto, casa, vida, outro]
-    if sum(valores) == 0:
-        return {"message": "Nenhuma apólice encontrada para os tipos."}, 404
+        valores = [carro, moto, casa, vida, outro]
+        if sum(valores) == 0:
+            return {"message": "Nenhuma apólice encontrada para os tipos."}, 404
 
-    colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, 5))
-    fig, ax = plt.subplots()
-    ax.pie(valores, colors=colors, radius=3, center=(0, 0),
-           wedgeprops=dict(width=1.5, edgecolor='w'))
-    ax.set(aspect="equal", title='Tipos de Apólices')
+        colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, 5))
+        fig, ax = plt.subplots()
+        ax.pie(valores, colors=colors, radius=3, center=(0, 0),
+               wedgeprops=dict(width=1.5, edgecolor='w'))
+        ax.set(aspect="equal", title='Tipos de Apólices')
 
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png", dpi=320)
-    plt.close()
-    buf.seek(0)
-    return send_file(buf, mimetype="image/png")
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png", dpi=320)
+        plt.close()
+        buf.seek(0)
+        print("[DEBUG] Gráfico gerado com sucesso!")
+        return send_file(buf, mimetype="image/png")
+    except Exception as e:
+        print(f"[ERROR] {e}")
+        return {"error": str(e)}, 500
 
 @app.get("/apolices-10")
 def apolices_10():
