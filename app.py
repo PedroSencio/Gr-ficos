@@ -58,14 +58,14 @@ def apolices_tipo():
         colors = ["#1976D2", "#388E3C", "#FBC02D", "#D32F2F", "#757575"]  # azul, verde, amarelo, vermelho, cinza
         labels = ["Carro", "Moto", "Casa", "Vida", "Outro"]
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(10, 6))  # largura=6, altura=6 polegadas
         ax.pie(valores, colors=colors, radius=1, center=(0, 0))
         ax.set(aspect="equal", title='Tipos de Apólices')
         ax.legend(labels, loc="center left", bbox_to_anchor=(1, 0.5))
 
 
         buf = io.BytesIO()
-        plt.savefig(buf, format="png", dpi=320)
+        plt.savefig(buf, format="png", dpi=520)
         plt.close()
         buf.seek(0)
         return send_file(buf, mimetype="image/png")
@@ -127,7 +127,7 @@ def plot_png():
     ys = [counts[d] for d in xs]
 
     # --- BARRAS ---
-    plt.figure(figsize=(8, 3))
+    plt.figure(figsize=(8, 4))
     plt.bar(xs, ys, width=0.8, align="center")  # ← barras
     plt.title(f"Apólices criadas (últimos {dias} dias)")
     plt.xlabel("Data")
