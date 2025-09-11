@@ -2,6 +2,7 @@ from flask import Flask, send_file
 import io
 from datetime import date, timedelta, datetime, timezone
 import os
+import numpy as np
 
 # Matplotlib "sem tela"
 import matplotlib
