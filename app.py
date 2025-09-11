@@ -3,15 +3,15 @@ import io
 from datetime import date, timedelta, datetime, timezone
 import os
 import numpy as np
-
-# Matplotlib "sem tela"
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+
 from supabase import create_client
 from flask_cors import CORS
+import numpy as np
 
 SUPABASE_URL = "https://frpqytwwgcxudrtenskk.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZycHF5dHd3Z2N4dWRydGVuc2trIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMDQ1NjIsImV4cCI6MjA3MjU4MDU2Mn0.KoqxNqEH_eGkZ6FzykzlUM7PyPv0sXkcrGC6RqxATjY"   # anon (com RLS de SELECT) ou service_role (apenas no backend)
@@ -46,19 +46,20 @@ def apolices_tipo():
     vida  = tipos["vida"]
     outro = tipos["outro"]
 
-    colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, len(5)))
+    valores = [carro, moto, casa, vida, outro]
+    if sum(valores) == 0:
+        return {"message": "Nenhuma apólice encontrada para os tipos."}, 404
 
+    colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, 5))
     fig, ax = plt.subplots()
-    ax.pie([carro, moto, casa, vida, outro], colors=colors, radius=3, center=(0, 0),
+    ax.pie(valores, colors=colors, radius=3, center=(0, 0),
            wedgeprops=dict(width=1.5, edgecolor='w'))
-    
     ax.set(aspect="equal", title='Tipos de Apólices')
 
     buf = io.BytesIO()
     plt.savefig(buf, format="png", dpi=320)
     plt.close()
     buf.seek(0)
-
     return send_file(buf, mimetype="image/png")
 
 @app.get("/apolices-10")
